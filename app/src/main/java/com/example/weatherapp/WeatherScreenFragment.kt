@@ -1,0 +1,281 @@
+package com.example.weatherapp
+
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.Context.LOCATION_SERVICE
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.example.weatherapp.Constants.Companion.REQUEST_CODE_LOCATION_PERMISSION
+import com.example.weatherapp.DateFormat.Companion.getDateString
+import com.example.weatherapp.adapters.HourlyWeatherAdapter
+import com.example.weatherapp.adapters.WeeklyWeatherAdapter
+import com.example.weatherapp.repository.Repository
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_weather_screen.*
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
+import java.text.SimpleDateFormat
+import java.util.*
+
+class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
+
+    private lateinit var viewModel: ViewModel
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    //test get location update
+    lateinit var locationRequest: LocationRequest
+    lateinit var locationCallback: LocationCallback
+
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_weather_screen, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        requestLocationPermissions()
+
+        val repository = Repository()
+        val viewModelProviderFactory = ViewModelProviderFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelProviderFactory).get(ViewModel::class.java)
+
+        val weeklyWeatherAdapter = WeeklyWeatherAdapter()
+        val hourlyWeatherAdapter = HourlyWeatherAdapter()
+
+        viewModel.currentWeather.observe(viewLifecycleOwner, Observer { response ->
+            when (response) {
+                is Resource.Success -> {
+                    hideProgressBar()
+                    response.data?.let { currentWeatherResponse ->
+                        val currentTemp = currentWeatherResponse.main.temp.toInt()
+                        if (currentTemp >= 0) {
+                            val aboveZeroTemperature = "+${currentTemp}°"
+                            weather_screen_temp.text = aboveZeroTemperature
+                        } else {
+                            val subzeroTemperature = "-${currentTemp}°"
+                            weather_screen_temp.text = subzeroTemperature
+                        }
+                        val date = getDateString(currentWeatherResponse.dt)
+                        weather_screen_date.text = date
+                        weather_screen_city.text = currentWeatherResponse.name
+                        weather_screen_description.text =
+                            currentWeatherResponse.weather[0].description
+                        val iconId = currentWeatherResponse.weather[0].icon
+                        Picasso.get().load("https://openweathermap.org/img/wn/$iconId@2x.png")
+                            .into(weather_screen_icon)
+                    }
+                }
+                is Resource.Error -> {
+                    showProgressBar()
+                }
+                is Resource.Loading -> {
+                    showProgressBar()
+                }
+            }
+
+        })
+
+        viewModel.forecastWeather.observe(viewLifecycleOwner, Observer { response ->
+            when (response) {
+                is Resource.Success -> {
+                    hideProgressBar()
+                    response.data?.let { forecastResponse ->
+                        val dailyList = forecastResponse.daily.toMutableList()
+                        val hourlyList = forecastResponse.hourly.toMutableList()
+
+
+                        weather_screen_weekly_forecast_recycler_view.adapter = weeklyWeatherAdapter
+                        weeklyWeatherAdapter.weeklyWeatherList = dailyList
+                        weeklyWeatherAdapter.notifyDataSetChanged()
+
+                        weather_screen_hourly_forecast_recycler_view.adapter = hourlyWeatherAdapter
+                        hourlyWeatherAdapter.hourlyWeatherList = hourlyList
+                        hourlyWeatherAdapter.notifyDataSetChanged()
+
+                    }
+                }
+                is Resource.Error -> {
+                    showProgressBar()
+                }
+                is Resource.Loading -> {
+                    showProgressBar()
+                }
+            }
+
+        })
+
+        weather_screen_search_btn.setOnClickListener {
+            if (weather_screen_city_search_field.text?.isNotEmpty() == true) {
+
+                viewModel.getCurrentWeather(weather_screen_city_search_field.text.toString())
+
+                // hide keybord
+                val imm =
+                    context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
+            }
+        }
+
+
+    }
+
+    var isLoading = false
+
+    private fun showProgressBar() {
+        weather_screen_progress_bar.visibility = View.VISIBLE
+        isLoading = true
+    }
+
+    private fun hideProgressBar() {
+        weather_screen_progress_bar.visibility = View.GONE
+        isLoading = false
+    }
+
+
+//    private fun hasLocationPermissions() =
+//        EasyPermissions.hasPermissions(
+//            requireContext(),
+//            Manifest.permission.ACCESS_COARSE_LOCATION
+//        )
+
+    private fun requestLocationPermissions() {
+        EasyPermissions.requestPermissions(
+            this,
+            "Для прогноза погоды в вашем городе введите город в поле сверху",
+            REQUEST_CODE_LOCATION_PERMISSION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        weather_screen_permission.text = "Разрешено"
+        Log.i("permission granted", "START")
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            != PackageManager.PERMISSION_DENIED
+        ) {
+
+            Log.i("permission granted", "GRANTED?")
+
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    val lat = location?.latitude
+                    val lon = location?.longitude
+                    Log.i("permission granted", "$lat $lon")
+                    val lonLat = "${lat.toString()}, ${lon.toString()}"
+                    weather_screen_permission.text = lonLat
+                }
+
+        }
+
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this).build().show()
+            weather_screen_permission.text = "Запрещено"
+            viewModel.getCurrentWeather("Sochi")
+        } else {
+            requestLocationPermissions()
+        }
+
+    }
+
+    private fun getLocation() {
+    }
+
+
+}
+
+
+//    private fun requestPermissions(){
+//        if(LocationUtility.hasLocationPermissions(requireContext())){
+//            return
+//        }
+//        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
+//            EasyPermissions.requestPermissions(
+//                this,
+//                "Нужно разрешение на информацию о местоположении",
+//                REQUEST_CODE_LOCATION_PERMISSION,
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            )
+//        } else {
+//            EasyPermissions.requestPermissions(
+//                this,
+//                "Нужно разрешение на информацию о местоположении",
+//                REQUEST_CODE_LOCATION_PERMISSION,
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+//            )
+//        }
+//    }
+//}
+
+class DateFormat {
+    companion object {
+        private val simpleDateFormat = SimpleDateFormat("E, dd MMMM", Locale("ru"))
+        private val shortDateFormat = SimpleDateFormat("dd MMM", Locale("ru"))
+        private val simpleTimeFormat = SimpleDateFormat("HH:mm", Locale("ru"))
+        fun getTimeString(time: Int): String = simpleTimeFormat.format(time * 1000L)
+        fun getDateString(time: Int): String {
+            val date = simpleDateFormat.format(time * 1000L)
+            var result = ""
+            if (date[4].equals('0')) {
+                result = date.removeRange(4..4)
+            } else return date
+            return result
+        }
+
+        fun getShortDateString(time: Int): String {
+            val date = shortDateFormat.format(time * 1000L)
+            var result = ""
+            if (date[0].equals('0')) {
+                result = date.removeRange(0..0)
+            } else return date
+            return result
+        }
+    }
+}
