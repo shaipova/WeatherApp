@@ -11,7 +11,6 @@ import retrofit2.Response
 
 class ViewModel(val repository: Repository) : ViewModel() {
 
-
     val currentWeather: MutableLiveData<Resource<CurrentWeatherResponse>> = MutableLiveData()
     var weatherResponse: CurrentWeatherResponse? = null
 
@@ -69,9 +68,8 @@ class ViewModel(val repository: Repository) : ViewModel() {
     private fun handleDailyForecastResponse(response: Response<ForecastResponse>) : Resource<ForecastResponse>{
         if(response.isSuccessful) {
             response.body()?.let { resultResponse ->
-                if(forecastResponse == null) {
                     forecastResponse = resultResponse
-                }
+
                 return Resource.Success(forecastResponse ?: resultResponse)
             }
         }

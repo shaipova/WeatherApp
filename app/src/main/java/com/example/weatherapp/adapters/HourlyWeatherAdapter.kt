@@ -44,7 +44,6 @@ class HourlyWeatherAdapter : RecyclerView.Adapter<HourlyWeatherAdapter.HourlyVie
             Picasso.get().load("https://openweathermap.org/img/wn/$iconId@2x.png")
                 .into(hourly_card_icon)
 
-
         }
     }
 

@@ -50,6 +50,7 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         requestLocationPermissions()
 
+
         val repository = Repository()
         val viewModelProviderFactory = ViewModelProviderFactory(repository)
         viewModel = ViewModelProvider(this, viewModelProviderFactory).get(ViewModel::class.java)
@@ -100,13 +101,13 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
 
                         weather_screen_weekly_forecast_recycler_view.adapter = weeklyWeatherAdapter
+                        weather_screen_hourly_forecast_recycler_view.adapter = hourlyWeatherAdapter
+
                         weeklyWeatherAdapter.weeklyWeatherList = dailyList
                         weeklyWeatherAdapter.notifyDataSetChanged()
 
-                        weather_screen_hourly_forecast_recycler_view.adapter = hourlyWeatherAdapter
                         hourlyWeatherAdapter.hourlyWeatherList = hourlyList
                         hourlyWeatherAdapter.notifyDataSetChanged()
-
                     }
                 }
                 is Resource.Error -> {
@@ -177,6 +178,7 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     val coordLength = lat.length - 1
                     val shortLatitude = lat.removeRange(5..coordLength).toDouble()
                     val shortLongitude = lon.removeRange(5..coordLength).toDouble()
+
 
                     viewModel.getForecast(shortLatitude, shortLongitude)
                     viewModel.getCurrentWeatherByCoord(shortLatitude, shortLongitude)
