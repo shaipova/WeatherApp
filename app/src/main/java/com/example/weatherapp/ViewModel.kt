@@ -13,37 +13,29 @@ import retrofit2.Response
 
 class ViewModel(val repository: Repository) : ViewModel() {
 
-    //var city: String = "Dawran"
 
     val currentWeather: MutableLiveData<Resource<CurrentWeatherResponse>> = MutableLiveData()
     var weatherResponse: CurrentWeatherResponse? = null
 
     val forecastWeather: MutableLiveData<Resource<ForecastResponse>> = MutableLiveData()
-
-    //val forecastByLocation: MutableLiveData<Resource<ForecastResponse>> = MutableLiveData()
-
     var forecastResponse: ForecastResponse? = null
 
 
-
+    // получить прогноз погоды по координатам на неделю и почасовой прогноз
     fun getForecast(latitude: Double, longitude: Double) = viewModelScope.launch {
         forecastWeather.value = Resource.Loading()
         val response = repository.getForecast(latitude, longitude)
         forecastWeather.value = handleDailyForecastResponse(response)
     }
 
+    // получить данные по текущей погоде по названию города
     fun getCurrentWeather(cityName: String) = viewModelScope.launch {
         currentWeather.value = Resource.Loading()
         val response = repository.getCurrentWeather(cityName)
         currentWeather.value = handleWeatherResponse(response)
     }
 
-//    fun getForecastByLocation(latitude: Double, longitude: Double) = viewModelScope.launch {
-//        forecastByLocation.value = Resource.Loading()
-//        val response = repository.getForecast(latitude, longitude)
-//        forecastByLocation.value = handleDailyForecastResponse(response)
-//    }
-
+    // получить данные по текущей погоде по координатам
     fun getCurrentWeatherByCoord(latitude: Double, longitude: Double) = viewModelScope.launch {
         currentWeather.value = Resource.Loading()
         val response = repository.getCurrentWeatherByCoord(latitude, longitude)
@@ -87,12 +79,4 @@ class ViewModel(val repository: Repository) : ViewModel() {
         }
         return Resource.Error(response.message())
     }
-
-//    init {
-//        getCurrentWeather(cityName = city)
-//    }
-
-
-
-
 }

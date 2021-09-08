@@ -135,7 +135,7 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 val newCity = weather_screen_city_search_field.text.toString()
                 viewModel.getCurrentWeather(newCity)
 
-                // hide keybord
+                // скрыть клавиатуру
                 val imm =
                     context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
@@ -153,12 +153,6 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         weather_screen_progress_bar.visibility = View.GONE
     }
 
-
-//    private fun hasLocationPermissions() =
-//        EasyPermissions.hasPermissions(
-//            requireContext(),
-//            Manifest.permission.ACCESS_COARSE_LOCATION
-//        )
 
     private fun requestLocationPermissions() {
         EasyPermissions.requestPermissions(
@@ -182,7 +176,8 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         Log.i("permission granted", "START")
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION)
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
             != PackageManager.PERMISSION_DENIED
         ) {
 
@@ -197,8 +192,8 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     val shortLatitude = lat.removeRange(5..coordLength).toDouble()
                     val shortLongitude = lon.removeRange(5..coordLength).toDouble()
 
-                        viewModel.getForecast(shortLatitude, shortLongitude)
-                        viewModel.getCurrentWeatherByCoord(shortLatitude, shortLongitude)
+                    viewModel.getForecast(shortLatitude, shortLongitude)
+                    viewModel.getCurrentWeatherByCoord(shortLatitude, shortLongitude)
 
                 }
 
@@ -213,7 +208,6 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         } else {
             requestLocationPermissions()
         }
-
     }
 
 

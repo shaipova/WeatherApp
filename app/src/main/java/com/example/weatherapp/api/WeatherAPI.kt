@@ -9,6 +9,7 @@ import retrofit2.http.Query
 
 interface WeatherAPI {
 
+    // получить данные по текущей погоде по названию города
     @GET("data/2.5/weather")
     suspend fun getCurrentWeather(
         @Query("q")
@@ -21,6 +22,7 @@ interface WeatherAPI {
         language: String = "ru"
     ) : Response<CurrentWeatherResponse>
 
+    // получить данные по текущей погоде по координатам
     @GET("data/2.5/weather")
     suspend fun getCurrentWeatherByCoord(
         @Query("lat")
@@ -35,6 +37,7 @@ interface WeatherAPI {
         language: String = "ru"
     ) : Response<CurrentWeatherResponse>
 
+    // получить прогноз погоды по координатам на неделю и почасовой прогноз
     @GET("data/2.5/onecall")
     suspend fun getForecast(
         @Query("lat")

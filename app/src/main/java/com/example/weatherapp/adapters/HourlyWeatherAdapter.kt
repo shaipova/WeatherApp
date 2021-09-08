@@ -23,7 +23,8 @@ class HourlyWeatherAdapter : RecyclerView.Adapter<HourlyWeatherAdapter.HourlyVie
     class HourlyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HourlyViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.hourly_weather_card, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.hourly_weather_card, parent, false)
         return HourlyViewHolder(view)
     }
 
@@ -32,19 +33,20 @@ class HourlyWeatherAdapter : RecyclerView.Adapter<HourlyWeatherAdapter.HourlyVie
         holder.itemView.apply {
 
             val temp = item.temp.toInt()
-            if(temp >= 0) {
+            if (temp >= 0) {
                 val aboveZeroTemperature = "+${temp}°"
-                hourly_card_temp.text  = aboveZeroTemperature
+                hourly_card_temp.text = aboveZeroTemperature
             } else {
                 val subzeroTemperature = "-${temp}°"
-                hourly_card_temp.text  = subzeroTemperature
+                hourly_card_temp.text = subzeroTemperature
             }
 
             hourly_card_time.text = getTimeString(item.dt)
             hourly_card_date.text = getShortDateString(item.dt)
 
             val iconId = item.weather[0].icon
-            Picasso.get().load("https://openweathermap.org/img/wn/$iconId@2x.png").into(hourly_card_icon)
+            Picasso.get().load("https://openweathermap.org/img/wn/$iconId@2x.png")
+                .into(hourly_card_icon)
 
 
         }
