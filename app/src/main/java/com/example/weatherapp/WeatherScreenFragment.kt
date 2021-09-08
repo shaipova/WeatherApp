@@ -2,22 +2,15 @@ package com.example.weatherapp
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
-import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.Constants.Companion.REQUEST_CODE_LOCATION_PERMISSION
@@ -26,8 +19,6 @@ import com.example.weatherapp.adapters.HourlyWeatherAdapter
 import com.example.weatherapp.adapters.WeeklyWeatherAdapter
 import com.example.weatherapp.repository.Repository
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_weather_screen.*
@@ -35,7 +26,6 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.round
 
 class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
@@ -173,16 +163,12 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        Log.i("permission granted", "START")
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
             != PackageManager.PERMISSION_DENIED
         ) {
-
-            Log.i("permission granted", "GRANTED")
-
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
                     val lat = location?.latitude.toString()
@@ -196,7 +182,6 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     viewModel.getCurrentWeatherByCoord(shortLatitude, shortLongitude)
 
                 }
-
         }
 
     }

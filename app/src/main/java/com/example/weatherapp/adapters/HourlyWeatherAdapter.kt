@@ -4,16 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weatherapp.DateFormat.Companion.getDateString
 import com.example.weatherapp.DateFormat.Companion.getShortDateString
 import com.example.weatherapp.DateFormat.Companion.getTimeString
 import com.example.weatherapp.R
-import com.example.weatherapp.model.CurrentWeatherResponse
-import com.example.weatherapp.model_forecast.ForecastResponse
 import com.example.weatherapp.model_forecast.Hourly
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.hourly_weather_card.view.*
-import kotlinx.android.synthetic.main.weekly_weather_card.view.*
 
 
 class HourlyWeatherAdapter : RecyclerView.Adapter<HourlyWeatherAdapter.HourlyViewHolder>() {
