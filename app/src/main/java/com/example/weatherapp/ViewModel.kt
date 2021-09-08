@@ -19,9 +19,14 @@ class ViewModel(val repository: Repository) : ViewModel() {
     var weatherResponse: CurrentWeatherResponse? = null
 
     val forecastWeather: MutableLiveData<Resource<ForecastResponse>> = MutableLiveData()
+
+    //val forecastByLocation: MutableLiveData<Resource<ForecastResponse>> = MutableLiveData()
+
     var forecastResponse: ForecastResponse? = null
 
-    private fun getForecast(latitude: Double, longitude: Double) = viewModelScope.launch {
+
+
+    fun getForecast(latitude: Double, longitude: Double) = viewModelScope.launch {
         forecastWeather.value = Resource.Loading()
         val response = repository.getForecast(latitude, longitude)
         forecastWeather.value = handleDailyForecastResponse(response)
@@ -30,6 +35,18 @@ class ViewModel(val repository: Repository) : ViewModel() {
     fun getCurrentWeather(cityName: String) = viewModelScope.launch {
         currentWeather.value = Resource.Loading()
         val response = repository.getCurrentWeather(cityName)
+        currentWeather.value = handleWeatherResponse(response)
+    }
+
+//    fun getForecastByLocation(latitude: Double, longitude: Double) = viewModelScope.launch {
+//        forecastByLocation.value = Resource.Loading()
+//        val response = repository.getForecast(latitude, longitude)
+//        forecastByLocation.value = handleDailyForecastResponse(response)
+//    }
+
+    fun getCurrentWeatherByCoord(latitude: Double, longitude: Double) = viewModelScope.launch {
+        currentWeather.value = Resource.Loading()
+        val response = repository.getCurrentWeatherByCoord(latitude, longitude)
         currentWeather.value = handleWeatherResponse(response)
     }
 

@@ -68,15 +68,6 @@
                 android:textColor="@color/black"/>
 
             <TextView
-                android:id="@+id/weather_screen_permission"
-                style="@style/BasicTextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="16sp"
-                android:layout_marginStart="8dp"/>
-
-            <TextView
                 android:id="@+id/weather_screen_date"
                 style="@style/BasicTextStyle"
                 android:layout_width="wrap_content"
@@ -96,7 +87,7 @@
                     style="@style/BasicTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+18"
+                    android:text=""
                     android:textSize="60sp" />
 
                 <ImageView
@@ -112,7 +103,7 @@
                 style="@style/BasicTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Солнечно"
+                android:text=""
                 android:layout_margin="8dp"
                 android:textSize="18sp"/>
 

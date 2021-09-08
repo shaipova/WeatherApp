@@ -35,17 +35,12 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.round
 
 class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private lateinit var viewModel: ViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
-    //test get location update
-    lateinit var locationRequest: LocationRequest
-    lateinit var locationCallback: LocationCallback
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,7 +132,8 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         weather_screen_search_btn.setOnClickListener {
             if (weather_screen_city_search_field.text?.isNotEmpty() == true) {
 
-                viewModel.getCurrentWeather(weather_screen_city_search_field.text.toString())
+                val newCity = weather_screen_city_search_field.text.toString()
+                viewModel.getCurrentWeather(newCity)
 
                 // hide keybord
                 val imm =
@@ -149,16 +145,12 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     }
 
-    var isLoading = false
-
     private fun showProgressBar() {
         weather_screen_progress_bar.visibility = View.VISIBLE
-        isLoading = true
     }
 
     private fun hideProgressBar() {
         weather_screen_progress_bar.visibility = View.GONE
-        isLoading = false
     }
 
 
@@ -187,24 +179,27 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        weather_screen_permission.text = "Разрешено"
         Log.i("permission granted", "START")
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
+                Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_DENIED
         ) {
 
-            Log.i("permission granted", "GRANTED?")
+            Log.i("permission granted", "GRANTED")
 
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
-                    val lat = location?.latitude
-                    val lon = location?.longitude
-                    Log.i("permission granted", "$lat $lon")
-                    val lonLat = "${lat.toString()}, ${lon.toString()}"
-                    weather_screen_permission.text = lonLat
+                    val lat = location?.latitude.toString()
+                    val lon = location?.longitude.toString()
+
+                    val coordLength = lat.length - 1
+                    val shortLatitude = lat.removeRange(5..coordLength).toDouble()
+                    val shortLongitude = lon.removeRange(5..coordLength).toDouble()
+
+                        viewModel.getForecast(shortLatitude, shortLongitude)
+                        viewModel.getCurrentWeatherByCoord(shortLatitude, shortLongitude)
+
                 }
 
         }
@@ -214,45 +209,15 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             AppSettingsDialog.Builder(this).build().show()
-            weather_screen_permission.text = "Запрещено"
-            viewModel.getCurrentWeather("Sochi")
+            viewModel.getCurrentWeather("Moscow")
         } else {
             requestLocationPermissions()
         }
 
     }
 
-    private fun getLocation() {
-    }
-
 
 }
-
-
-//    private fun requestPermissions(){
-//        if(LocationUtility.hasLocationPermissions(requireContext())){
-//            return
-//        }
-//        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
-//            EasyPermissions.requestPermissions(
-//                this,
-//                "Нужно разрешение на информацию о местоположении",
-//                REQUEST_CODE_LOCATION_PERMISSION,
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            )
-//        } else {
-//            EasyPermissions.requestPermissions(
-//                this,
-//                "Нужно разрешение на информацию о местоположении",
-//                REQUEST_CODE_LOCATION_PERMISSION,
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-//                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-//            )
-//        }
-//    }
-//}
 
 class DateFormat {
     companion object {
