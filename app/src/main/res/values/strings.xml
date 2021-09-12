@@ -8,5 +8,6 @@
     <string name="sent_first">1 сентября</string>
     <string name="add_city">Введите город</string>
     <string name="temperature_sample">+18°</string>
+    <string name="toast_error_text">Что-то пошло не так. Попробуйте снова</string>
 
 </resources>

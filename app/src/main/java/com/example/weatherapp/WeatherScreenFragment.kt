@@ -5,11 +5,13 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -58,6 +60,7 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val weeklyWeatherAdapter = WeeklyWeatherAdapter()
         val hourlyWeatherAdapter = HourlyWeatherAdapter()
 
+
         viewModel.currentWeather.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Resource.Success -> {
@@ -83,6 +86,9 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 }
                 is Resource.Error -> {
                     showProgressBar()
+                    Toast.makeText(requireContext(), "Что-то пошло не так. Попробуйте снова", Toast.LENGTH_LONG)
+                        .show()
+                    hideProgressBar()
                 }
                 is Resource.Loading -> {
                     showProgressBar()
@@ -112,6 +118,7 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 }
                 is Resource.Error -> {
                     showProgressBar()
+
                 }
                 is Resource.Loading -> {
                     showProgressBar()

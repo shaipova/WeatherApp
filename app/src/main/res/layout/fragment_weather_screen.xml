@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".WeatherScreenFragment">
+    tools:context=".WeatherScreenFragment"
+    android:id="@+id/weather_screen_linear_layout">
 
     <LinearLayout
         android:layout_width="match_parent"
