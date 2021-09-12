@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="54dp"
     android:layout_marginVertical="4dp"
-    app:cardBackgroundColor="#A8C5FF"
+    app:cardBackgroundColor="?android:attr/colorPrimary"
     app:cardCornerRadius="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +30,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/temperature_sample"
-            android:textColor="@color/black"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/weekly_card_icon"

@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.WeatherApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">#1B1B1B</item>
+        <item name="colorPrimaryVariant">@color/cool_periwinkle</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -17,11 +17,13 @@
     <style name="BasicTextStyle" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="android:textSize">24sp</item>
         <item name="fontFamily">@font/montserrat</item>
+        <item name="android:textColor">@color/cool_light_periwinkle</item>
     </style>
 
     <style name="SmallTextStyle" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="android:textSize">16sp</item>
         <item name="fontFamily">@font/roboto</item>
+        <item name="android:textColor">@color/cool_periwinkle</item>
     </style>
 
 </resources>

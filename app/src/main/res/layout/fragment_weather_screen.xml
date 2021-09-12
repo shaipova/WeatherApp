@@ -37,7 +37,7 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="18dp"
             android:background="@drawable/ic_baseline_search_24"
-            android:backgroundTint="#7FA9FF" />
+            android:backgroundTint="@color/cool_periwinkle" />
 
     </LinearLayout>
 
@@ -46,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:backgroundTint="#7FA9FF"
+        android:backgroundTint="?android:attr/colorPrimary"
         app:cardCornerRadius="16dp">
 
         <LinearLayout
@@ -56,13 +56,13 @@
 
             <TextView
                 android:id="@+id/weather_screen_city"
+                style="@style/BasicTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat"
                 android:text="@string/city"
-                android:textColor="@color/black"
                 android:textSize="24sp" />
 
             <TextView
