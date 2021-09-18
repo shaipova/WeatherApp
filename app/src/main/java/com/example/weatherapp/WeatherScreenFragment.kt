@@ -110,10 +110,9 @@ class WeatherScreenFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         weather_screen_hourly_forecast_recycler_view.adapter = hourlyWeatherAdapter
 
                         weeklyWeatherAdapter.weeklyWeatherList = dailyList
-                        weeklyWeatherAdapter.notifyDataSetChanged()
 
                         hourlyWeatherAdapter.hourlyWeatherList = hourlyList
-                        hourlyWeatherAdapter.notifyDataSetChanged()
+                        
                     }
                 }
                 is Resource.Error -> {
